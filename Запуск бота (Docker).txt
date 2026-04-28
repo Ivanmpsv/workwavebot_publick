@@ -1,0 +1,17 @@
+В Docker сам Go репозиторий и PostgreSQL
+
+Вам нужно:
+# 1. скопировать шаблон и указать токен с паролем
+
+cp .env.example .env
+
+# открыть .env и вписать BOT_TOKEN и DB_PASSWORD
+
+# 2. собрать и запустить
+docker-compose up --build
+
+# 3. добавить первого администратора - один раз через команду, далее админ внутри бота может создавать новых админов. 
+Вам потребуется свой телеграм ID (НЕ ник!)  - просто нажмите start у этого бота @userinfobot
+
+docker exec -it postgres_db psql -U postgres -d ww_bot -c \
+  "INSERT INTO admins (id, name) VALUES (Ваш_telegram_id, 'Имя');"

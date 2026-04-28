@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ww_bot
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: workwavebot
+    depends_on:
+      db:
+        condition: service_healthy  # ждём пока БД реально готова
+    env_file:
+      - .env  # читаем все переменные из .env
+    environment:
+      DB_HOST: db  # переопределяем хост — внутри Docker это имя сервиса
+
+volumes:
+  postgres_data:
